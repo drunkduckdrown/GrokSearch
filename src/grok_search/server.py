@@ -361,15 +361,14 @@ async def web_fetch(
 ) -> str:
     await log_info(ctx, f"Begin Fetch: {url}", config.debug_enabled)
 
-    result = await _call_tavily_extract(url)
-    if result:
-        await log_info(ctx, "Fetch Finished (Tavily)!", config.debug_enabled)
-        return result
-
-    await log_info(ctx, "Tavily unavailable or failed, trying Firecrawl...", config.debug_enabled)
     result = await _call_firecrawl_scrape(url, ctx)
     if result:
         await log_info(ctx, "Fetch Finished (Firecrawl)!", config.debug_enabled)
+        return result
+    await log_info(ctx, "Firecrawl unavailable or failed, trying Tavily...", config.debug_enabled)
+    result = await _call_tavily_extract(url)
+    if result:
+        await log_info(ctx, "Fetch Finished (Tavily)!", config.debug_enabled)
         return result
 
     await log_info(ctx, "Fetch Failed!", config.debug_enabled)
